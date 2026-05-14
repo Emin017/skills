@@ -29,6 +29,7 @@ defines:
   - SYNTHESIS
 macro_libs:
   - macros/SRAM_1024x32_1RW.lib
+corner: ss_0p72v_125c
 replacements:
   - logical_module: sram_1rw_1024x32
     logical_file: rtl/sram_1rw_1024x32.sv
@@ -57,7 +58,7 @@ The manifest should make polarity explicit. Avoid names like `enable: CEN` witho
 
 ## Synthesis Library Integration
 
-After replacing RTL to instantiate memory macros, update the synthesis script to load the corresponding memory compiler library. Do not add memory compiler generated Verilog models to the RTL filelist or to normal Verilog/SystemVerilog synthesis inputs.
+After replacing RTL to instantiate memory macros, update the synthesis script to load the corresponding memory compiler library. Choose a memory Liberty file whose process/voltage/temperature corner matches the Liberty files used by the rest of the synthesis flow. Do not add memory compiler generated Verilog models to the RTL filelist or to normal Verilog/SystemVerilog synthesis inputs.
 
 For Yosys flows, prefer the project's existing library loading pattern; commonly this means loading the macro Liberty file so Yosys creates the macro module as a blackbox cell, for example:
 
@@ -65,7 +66,7 @@ For Yosys flows, prefer the project's existing library loading pattern; commonly
 read_liberty -lib macros/SRAM_1024x32_1RW.lib
 ```
 
-Keep vendor Verilog models in the simulation flow, or use exact-port blackbox stubs only when a syntax/hierarchy check cannot consume the library directly. Record the library path and synthesis-script change in the manifest.
+Keep vendor Verilog models in the simulation flow, or use exact-port blackbox stubs only when a syntax/hierarchy check cannot consume the library directly. Record the library path, selected corner, and synthesis-script change in the manifest.
 
 If synthesis is run in the current task, use the generated netlist as a final check; otherwise provide this to the user as a post-synthesis check. Memory macro instances should not carry Verilog module parameters from memory compiler models. If the netlist contains parameterized memory macro modules, re-check whether a generated Verilog model was accidentally read as RTL instead of loading the macro library.
 
