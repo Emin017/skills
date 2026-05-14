@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prepare RTL for Synth"
+  short_description: "Prepare RTL for synthesis flows"
+  default_prompt: "Use $prepare-rtl-for-synth to make this RTL compatible with the target synthesis flow and prepare any needed SRAM macro replacement manifest."
