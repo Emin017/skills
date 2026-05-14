@@ -3,7 +3,7 @@ name: prepare-rtl-for-synth
 description: Prepare Verilog/SystemVerilog RTL for synthesis. Use when adapting handwritten or generated RTL for Yosys, yosys-slang, Verilator, sv-lang, Design Compiler, VCS, or similar EDA flows; handling Chisel/FIRRTL/firtool generated code; making syntax compatibility changes; inspecting memory compiler SRAM outputs; preparing macro replacement manifests; or running syntax, lint, hierarchy, and synthesis-front-end checks.
 ---
 
-# Prepare RTL for Synth
+# Prepare RTL for Synthesis
 
 ## Overview
 
