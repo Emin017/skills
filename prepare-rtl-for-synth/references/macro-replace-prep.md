@@ -7,7 +7,8 @@ Collect these facts before preparing macro replacement:
 - `top`: synthesis/check top module.
 - `rtl_files`: ordered RTL/SystemVerilog file list, or the build command that produces one.
 - `include_dirs` and `defines`: all required parser flags.
-- `macro_files`: memory compiler Verilog models or blackbox stubs.
+- `macro_libs`: memory compiler Liberty or synthesis library files to load in the synthesis script.
+- `macro_models`: simulation models or exact-port blackbox stubs, used only when the selected check flow requires them.
 - `logical_memories`: wrapper module names, inferred memory sites, or direct instances to replace.
 - `replacement_policy`: wrapper replacement, direct instance replacement, generated stubs, or project-specific flow.
 
@@ -26,13 +27,13 @@ include_dirs:
   - rtl/include
 defines:
   - SYNTHESIS
-macro_files:
-  - macros/SRAM_1024x32_1RW.v
+macro_libs:
+  - macros/SRAM_1024x32_1RW.lib
 replacements:
   - logical_module: sram_1rw_1024x32
     logical_file: rtl/sram_1rw_1024x32.sv
     macro_module: SRAM_1024x32_1RW
-    macro_file: macros/SRAM_1024x32_1RW.v
+    macro_lib: macros/SRAM_1024x32_1RW.lib
     depth: 1024
     data_width: 32
     address_width: 10
@@ -53,6 +54,20 @@ replacements:
 ```
 
 The manifest should make polarity explicit. Avoid names like `enable: CEN` without recording whether either side is active-low.
+
+## Synthesis Library Integration
+
+After replacing RTL to instantiate memory macros, update the synthesis script to load the corresponding memory compiler library. Do not add memory compiler generated Verilog models to the RTL filelist or to normal Verilog/SystemVerilog synthesis inputs.
+
+For Yosys flows, prefer the project's existing library loading pattern; commonly this means loading the macro Liberty file so Yosys creates the macro module as a blackbox cell, for example:
+
+```yosys
+read_liberty -lib macros/SRAM_1024x32_1RW.lib
+```
+
+Keep vendor Verilog models in the simulation flow, or use exact-port blackbox stubs only when a syntax/hierarchy check cannot consume the library directly. Record the library path and synthesis-script change in the manifest.
+
+If synthesis is run in the current task, use the generated netlist as a final check; otherwise provide this to the user as a post-synthesis check. Memory macro instances should not carry Verilog module parameters from memory compiler models. If the netlist contains parameterized memory macro modules, re-check whether a generated Verilog model was accidentally read as RTL instead of loading the macro library.
 
 ## Mapping Checklist
 

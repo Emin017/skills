@@ -21,6 +21,7 @@ Prepare RTL for a target synthesis or lint flow without changing described hardw
 - Do not modify RTL behavior or functionality; the described hardware circuit should remain equivalent.
 - Do not use broad rewrites for local syntax/config issues, or automatically replace every behavioral memory.
 - Do not guess tool options or trust the most permissive parser as downstream compatibility proof.
+- Do not add memory compiler generated Verilog models to the synthesis RTL filelist; add the corresponding library in the synthesis script instead, or the netlist may retain macro module parameters.
 - Do not delete, gate, or comment simulation/debug code blindly.
 
 ## Track 1: Syntax Compatibility Changes

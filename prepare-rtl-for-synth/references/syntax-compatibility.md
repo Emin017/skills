@@ -68,6 +68,14 @@ rg -n '\$(display|write|fwrite|strobe|monitor|print)\b' <rtl-or-filelist-paths>
 
 If the statements are intended only for simulation/debug, gate them out of synthesis using the project's existing convention, such as ``ifndef SYNTHESIS``, `translate_off/translate_on`, or generator options for Chisel/firtool debug output. Directly commenting out confirmed debug-only statements is also acceptable when it matches the project's style. Do not delete or comment them blindly; report any behavioral or verification impact.
 
+If synthesis is run in the current task, scan the generated netlist or post-synthesis RTL for print remnants. If the user will run synthesis separately, provide this as a suggested final check:
+
+```bash
+rg -n '\$print|\$(display|write|fwrite|strobe|monitor)\b|\\$print' <netlist-or-synth-output>
+```
+
+Any remaining `$print` or print-like statement in the generated netlist is a warning sign that should be explained or removed from the synthesis path.
+
 ## Syntax and Hierarchy Template
 
 Use the same file order, include paths, and defines as the RTL build. A typical check is:
